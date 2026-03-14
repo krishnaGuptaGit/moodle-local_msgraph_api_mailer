@@ -268,7 +268,9 @@ echo $OUTPUT->header();
                 </td>
                 <td style="text-align:center;">
                   <?php if (!empty($r->has_attachment)): ?>
-                    <span title="Has attachment" style="color:#0078d4;"><i class="fa fa-paperclip"></i></span>
+                    <span title="Has attachment" style="color:#0078d4;font-size:1rem;"><i class="fa fa-paperclip"></i></span>
+                  <?php else: ?>
+                    <span style="color:#adb5bd;">—</span>
                   <?php endif; ?>
                 </td>
                 <td>

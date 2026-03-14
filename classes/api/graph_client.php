@@ -5,8 +5,7 @@ defined('MOODLE_INTERNAL') || die();
 
 class graph_client {
 
-    /** Attachments >= this size (bytes) are uploaded via upload session instead of inline base64. */
-    private const LARGE_ATTACHMENT_THRESHOLD = 3145728; // 3 MB
+    /** Chunk size for upload session: must be a multiple of 320 KB. */
 
     /** Chunk size for upload session: must be a multiple of 320 KB. Using 4 × 320 KB = 1.25 MB. */
     private const UPLOAD_CHUNK_SIZE = 1310720; // 4 × 327680
@@ -78,7 +77,8 @@ class graph_client {
         $token               = $this->get_access_token();
         $sender_email        = trim((string) get_config('local_msgraph_api_mailer', 'sender_email'));
         $sender_display_name = trim((string) get_config('local_msgraph_api_mailer', 'sender_display_name'));
-        $read_receipt        = (bool) get_config('local_msgraph_api_mailer', 'read_receipt_enabled');
+        $threshold_mb        = max(1, (int) get_config('local_msgraph_api_mailer', 'large_attachment_mb'));
+        $threshold_bytes     = $threshold_mb * 1024 * 1024;
 
         if (empty($sender_email)) {
             throw new \Exception('MS Graph Mailer: Sender email not configured');
@@ -91,14 +91,13 @@ class graph_client {
 
         // Process all attachments: load content, detect MIME, fix filename extension.
         // Returns two lists: small (inline base64) and large (need upload session).
-        [$small_attachments, $large_attachments] = $this->split_attachments($attachments);
+        [$small_attachments, $large_attachments] = $this->split_attachments($attachments, $threshold_bytes);
 
         $message = [
-            'subject'                => $subject,
-            'body'                   => ['contentType' => 'HTML', 'content' => $body],
-            'from'                   => ['emailAddress' => $from_address],
-            'toRecipients'           => $this->format_recipients($to),
-            'isReadReceiptRequested' => $read_receipt,
+            'subject'      => $subject,
+            'body'         => ['contentType' => 'HTML', 'content' => $body],
+            'from'         => ['emailAddress' => $from_address],
+            'toRecipients' => $this->format_recipients($to),
         ];
 
         if (!empty($small_attachments)) {
@@ -136,11 +135,13 @@ class graph_client {
 
     /**
      * Process raw attachment list: load file content, detect MIME, fix filename.
-     * Split into small (< 3 MB, inline base64) and large (>= 3 MB, upload session).
+     * Split into small (inline base64) and large (upload session) based on threshold.
      *
+     * @param array $attachments    Raw attachment list from PHPMailer
+     * @param int   $threshold_bytes Byte size at/above which upload session is used
      * @return array [small_attachments[], large_attachments[]]
      */
-    private function split_attachments($attachments) {
+    private function split_attachments($attachments, $threshold_bytes) {
         $small = [];
         $large = [];
 
@@ -180,7 +181,7 @@ class graph_client {
 
             $size = strlen($content);
 
-            if ($size >= self::LARGE_ATTACHMENT_THRESHOLD) {
+            if ($size >= $threshold_bytes) {
                 // Large: will be uploaded via upload session after draft is created.
                 $large[] = [
                     'name'     => $name,

@@ -30,7 +30,7 @@ define(['jquery', 'core/str'], function($, str) {
                 {key: 'status_badge_checking',          component: 'local_msgraph_api_mailer'},
                 {key: 'connection_badge_connected',     component: 'local_msgraph_api_mailer'},
                 {key: 'connection_badge_disconnected',  component: 'local_msgraph_api_mailer'}
-            ]).done(function(s) {
+            ]).then(function(s) {
                 self.strings = {
                     checkPermissions:        s[0],
                     sendTestEmail:           s[1],
@@ -42,7 +42,7 @@ define(['jquery', 'core/str'], function($, str) {
                     disconnected:            s[7]
                 };
                 self.addTestSection();
-            }).fail(function() {
+            }).catch(function() {
                 self.strings = {
                     checkPermissions:       'Check Permissions',
                     sendTestEmail:          'Send Test Email',

@@ -74,9 +74,9 @@ $string['email_logs'] = 'Email Logs';
 $string['check_permissions'] = 'Check Permissions';
 $string['check_permissions_desc'] = 'Test connection and verify Mail.Send permission is enabled';
 
-// Read receipt
-$string['read_receipt_enabled'] = 'Request read receipts';
-$string['read_receipt_enabled_desc'] = 'Ask recipients to send a read receipt when they open emails. Note: recipients can decline and most email clients do not send receipts automatically.';
+// Large attachment threshold
+$string['large_attachment_mb'] = 'Large attachment threshold (MB)';
+$string['large_attachment_mb_desc'] = 'Attachments at or above this size (in MB) are uploaded via the Microsoft Graph upload session API instead of inline base64, which supports files up to 150 MB. Default: 3 MB.';
 
 // Changelog
 $string['view_changelog'] = 'Changelog';

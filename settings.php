@@ -83,11 +83,12 @@ if (!isset($hassiteconfig) || $hassiteconfig) {
         1
     ));
 
-    $settings->add(new admin_setting_configcheckbox(
-        'local_msgraph_api_mailer/read_receipt_enabled',
-        get_string('read_receipt_enabled', 'local_msgraph_api_mailer'),
-        get_string('read_receipt_enabled_desc', 'local_msgraph_api_mailer'),
-        0
+    $settings->add(new admin_setting_configtext(
+        'local_msgraph_api_mailer/large_attachment_mb',
+        get_string('large_attachment_mb', 'local_msgraph_api_mailer'),
+        get_string('large_attachment_mb_desc', 'local_msgraph_api_mailer'),
+        3,
+        PARAM_INT
     ));
 
     // -- Test & Validate section
