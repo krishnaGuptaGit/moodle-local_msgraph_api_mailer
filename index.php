@@ -139,15 +139,21 @@ echo $OUTPUT->header();
       </div>
       <div class="msgraph-card-body">
         <p class="text-muted mb-3"><?php echo get_string('send_test_email_desc', 'local_msgraph_api_mailer'); ?></p>
-        <div class="form-group">
-          <label for="test-email-input"><strong><?php echo get_string('recipient_email', 'local_msgraph_api_mailer'); ?></strong></label>
-          <div class="input-group" style="max-width:420px;">
-            <input type="email" id="test-email-input" class="form-control"
-                   placeholder="user@example.com"
-                   <?php echo $is_configured ? '' : 'disabled'; ?>>
+        <div class="mb-3">
+          <label for="test-email-input" class="form-label">
+            <strong><?php echo get_string('recipient_email', 'local_msgraph_api_mailer'); ?></strong>
+          </label>
+          <input type="email" id="test-email-input" class="form-control mb-2"
+                 placeholder="user@example.com" style="max-width:420px;"
+                 <?php echo $is_configured ? '' : 'disabled'; ?>>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
             <button type="button" id="send-test-btn" class="btn btn-primary" <?php echo $is_configured ? '' : 'disabled'; ?>>
               <i class="fa fa-paper-plane"></i>
               <?php echo get_string('send_test_email_btn', 'local_msgraph_api_mailer'); ?>
+            </button>
+            <button type="button" id="send-test-attachment-btn" class="btn btn-secondary" <?php echo $is_configured ? '' : 'disabled'; ?>>
+              <i class="fa fa-paperclip"></i>
+              <?php echo get_string('send_test_with_attachment_btn', 'local_msgraph_api_mailer'); ?>
             </button>
           </div>
         </div>

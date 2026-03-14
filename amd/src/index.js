@@ -52,7 +52,13 @@ define(['jquery'], function($) {
                 });
             });
 
-            $('#send-test-btn').on('click', function() {
+            /**
+             * Validate email input then POST to ajax.php.
+             *
+             * @param {string} action  AJAX action: 'send_test_email' or 'send_test_email_attachment'
+             * @param {string} label   Spinner label shown while sending
+             */
+            function sendEmail(action, label) {
                 var email = $('#test-email-input').val().trim();
                 if (!email) {
                     $('#email-result').html(
@@ -68,13 +74,13 @@ define(['jquery'], function($) {
                 }
                 $('#email-result').html(
                     '<div class="alert alert-info">' +
-                    '<i class="fa fa-spinner fa-spin"></i> Sending test email...</div>'
+                    '<i class="fa fa-spinner fa-spin"></i> ' + label + '</div>'
                 );
                 $.ajax({
                     url: ajaxUrl,
                     type: 'POST',
                     dataType: 'json',
-                    data: {action: 'send_test_email', email: email, sesskey: sesskey},
+                    data: {action: action, email: email, sesskey: sesskey},
                     success: function(r) {
                         showResult('email-result', r.success, r.message);
                     },
@@ -83,6 +89,14 @@ define(['jquery'], function($) {
                             'Error connecting to server (HTTP ' + xhr.status + ')');
                     }
                 });
+            }
+
+            $('#send-test-btn').on('click', function() {
+                sendEmail('send_test_email', 'Sending test email...');
+            });
+
+            $('#send-test-attachment-btn').on('click', function() {
+                sendEmail('send_test_email_attachment', 'Sending test email with attachment...');
             });
 
             $('#test-email-input').on('keypress', function(e) {
