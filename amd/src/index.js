@@ -1,0 +1,109 @@
+/**
+ * MS Graph Mailer - Standalone test/validate page JS.
+ *
+ * @module     local_msgraph_api_mailer/index
+ * @copyright  2026
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+define(['jquery'], function($) {
+    'use strict';
+
+    var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    /**
+     * Show a result alert in the given div.
+     *
+     * @param {string}  divId   Target div ID (without #)
+     * @param {boolean} success True for success style, false for error style
+     * @param {string}  message Message to display inside the alert
+     */
+    function showResult(divId, success, message) {
+        var cls = success ? 'alert-success' : 'alert-danger';
+        $('#' + divId).html('<div class="alert ' + cls + '">' + message + '</div>');
+    }
+
+    return {
+
+        /**
+         * Initialise click handlers for the test/validate page buttons.
+         */
+        init: function() {
+            var ajaxUrl = M.cfg.wwwroot + '/local/msgraph_api_mailer/ajax.php';
+            var sesskey = M.cfg.sesskey;
+
+            $('#check-permissions-btn').on('click', function() {
+                $('#permission-result').html(
+                    '<div class="alert alert-info">' +
+                    '<i class="fa fa-spinner fa-spin"></i> Checking permissions...</div>'
+                );
+                $.ajax({
+                    url: ajaxUrl,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {action: 'check_permissions', sesskey: sesskey},
+                    success: function(r) {
+                        showResult('permission-result', r.success, r.message);
+                    },
+                    error: function(xhr) {
+                        showResult('permission-result', false,
+                            'Error connecting to server (HTTP ' + xhr.status + ')');
+                    }
+                });
+            });
+
+            /**
+             * Validate email input then POST to ajax.php.
+             *
+             * @param {string} action  AJAX action: 'send_test_email' or 'send_test_email_attachment'
+             * @param {string} label   Spinner label shown while sending
+             */
+            function sendEmail(action, label) {
+                var email = $('#test-email-input').val().trim();
+                if (!email) {
+                    $('#email-result').html(
+                        '<div class="alert alert-warning">Please enter an email address.</div>'
+                    );
+                    return;
+                }
+                if (!emailRe.test(email)) {
+                    $('#email-result').html(
+                        '<div class="alert alert-warning">Please enter a valid email address.</div>'
+                    );
+                    return;
+                }
+                $('#email-result').html(
+                    '<div class="alert alert-info">' +
+                    '<i class="fa fa-spinner fa-spin"></i> ' + label + '</div>'
+                );
+                $.ajax({
+                    url: ajaxUrl,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {action: action, email: email, sesskey: sesskey},
+                    success: function(r) {
+                        showResult('email-result', r.success, r.message);
+                    },
+                    error: function(xhr) {
+                        showResult('email-result', false,
+                            'Error connecting to server (HTTP ' + xhr.status + ')');
+                    }
+                });
+            }
+
+            $('#send-test-btn').on('click', function() {
+                sendEmail('send_test_email', 'Sending test email...');
+            });
+
+            $('#send-test-attachment-btn').on('click', function() {
+                sendEmail('send_test_email_attachment', 'Sending test email with attachment...');
+            });
+
+            $('#test-email-input').on('keypress', function(e) {
+                if (e.which === 13) {
+                    $('#send-test-btn').trigger('click');
+                }
+            });
+        }
+    };
+});
