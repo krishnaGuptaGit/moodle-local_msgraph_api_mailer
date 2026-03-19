@@ -161,7 +161,7 @@ define(['jquery', 'core/ajax', 'core/str'], function($, Ajax, str) {
                 args: {}
             }])[0].then((r) => {
                 this.setBadge(r.connected ? 'connected' : 'disconnected');
-            }).catch(() => {
+            }).catch((_e) => {
                 this.setBadge('disconnected');
             });
         },
@@ -207,8 +207,8 @@ define(['jquery', 'core/ajax', 'core/str'], function($, Ajax, str) {
                     ? '<div class="alert alert-success py-2">' + msg + '</div>'
                     : '<div class="alert alert-danger py-2">' + msg + '</div>');
                 this.setBadge(r.success ? 'connected' : 'disconnected');
-            }).catch(() => {
-                $result.html('<div class="alert alert-danger py-2">Server error.</div>');
+            }).catch((e) => {
+                $result.html('<div class="alert alert-danger py-2">' + (e?.message ?? 'Server error.') + '</div>');
                 this.setBadge('disconnected');
             });
         },
@@ -253,8 +253,8 @@ define(['jquery', 'core/ajax', 'core/str'], function($, Ajax, str) {
                 $result.html(r.success
                     ? '<div class="alert alert-success py-2">' + r.message + '</div>'
                     : '<div class="alert alert-danger py-2">' + r.message + '</div>');
-            }).catch(() => {
-                $result.html('<div class="alert alert-danger py-2">Server error.</div>');
+            }).catch((e) => {
+                $result.html('<div class="alert alert-danger py-2">' + (e?.message ?? 'Server error.') + '</div>');
             });
         }
     };

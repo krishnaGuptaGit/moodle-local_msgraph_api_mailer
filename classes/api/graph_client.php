@@ -50,6 +50,8 @@ class graph_client {
      * Constructor — reads plugin configuration from Moodle settings.
      */
     public function __construct() {
+        global $CFG;
+        require_once($CFG->libdir . '/filelib.php');
         $this->tenantid     = trim((string) get_config('local_msgraph_api_mailer', 'tenant_id'));
         $this->clientid     = trim((string) get_config('local_msgraph_api_mailer', 'client_id'));
         $this->clientsecret = trim((string) get_config('local_msgraph_api_mailer', 'client_secret'));
@@ -360,9 +362,10 @@ class graph_client {
             $chunklen = strlen($chunk);
             $end      = $offset + $chunklen - 1;
 
-            $resp     = $curl->request($uploadurl, [
+            // post() is the only public \curl method accepting a raw string body.
+            // CURLOPT_CUSTOMREQUEST overrides the HTTP verb to PUT.
+            $resp     = $curl->post($uploadurl, $chunk, [
                 'CURLOPT_CUSTOMREQUEST' => 'PUT',
-                'CURLOPT_POSTFIELDS'    => $chunk,
                 'CURLOPT_HTTPHEADER'    => [
                     'Content-Type: application/octet-stream',
                     'Content-Length: ' . $chunklen,
@@ -413,10 +416,9 @@ class graph_client {
             'CURLOPT_HTTPHEADER'    => $headers,
             'CURLOPT_TIMEOUT'       => 60,
         ];
-        if ($body !== '') {
-            $options['CURLOPT_POSTFIELDS'] = $body;
-        }
-        $resp     = $curl->request($url, $options);
+        // post() is the only public method that accepts a raw string body.
+        // CURLOPT_CUSTOMREQUEST overrides the HTTP verb to GET/POST/DELETE/etc.
+        $resp     = $curl->post($url, $body, $options);
         $httpcode = (int) $curl->get_info()['http_code'];
         $curlerr  = $curl->error;
 
