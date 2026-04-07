@@ -57,5 +57,10 @@ function xmldb_local_msgraph_api_mailer_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026031400, 'local', 'msgraph_api_mailer');
     }
 
+    if ($oldversion < 2026040700) {
+        // No DB schema changes — version bump for settings.php phpcs fix.
+        upgrade_plugin_savepoint(true, 2026040700, 'local', 'msgraph_api_mailer');
+    }
+
     return true;
 }

@@ -5,6 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [1.1.7] — 2026-04-07 (version 2026040700)
+
+### Fixed
+- **Array spacing in settings.php** — corrected missing/extra spaces around `=>` and after commas in the `$statusmap` array (lines 53–57) to comply with Moodle coding standard (phpcs)
+
+---
+
 ## [1.1.0] — 2026-03-14 (version 2026031400)
 
 ### Added
