@@ -18,6 +18,28 @@
 
     Email log viewer template for MS Graph API Mailer.
 
+    Context variables required for this template:
+    * action_url - Form GET action URL for the filter form.
+    * filter_status_all_selected - Whether the "All" status option is selected.
+    * filter_status_sent_selected - Whether the "Sent" status option is selected.
+    * filter_status_failed_selected - Whether the "Failed" status option is selected.
+    * filter_recipient - Current recipient filter value.
+    * filter_subject - Current subject filter value.
+    * subject_placeholder - Placeholder text for the subject filter input.
+    * filter_datefrom - Current "from" date filter value.
+    * filter_dateto - Current "to" date filter value.
+    * total - Total number of matching log records.
+    * export_url - URL to export the filtered results as CSV.
+    * has_records - Whether there are any records to display.
+    * records - Array of log records (id, recipients, subject, status_label, status_badge_class, has_attachment, response, timecreated).
+    * paging_bar - Rendered paging bar HTML.
+    * settings_url - URL of the plugin settings page.
+    * test_url - URL of the test and validate page.
+
+    @package    local_msgraph_api_mailer
+    @copyright  2026 Krishna Gupta
+    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+
     Example context (json):
     {
         "action_url": "/local/msgraph_api_mailer/emaillog.php",
@@ -48,10 +70,6 @@
         "settings_url": "/admin/settings.php?section=local_msgraph_api_mailer",
         "test_url": "/local/msgraph_api_mailer/index.php"
     }
-
-    @package    local_msgraph_api_mailer
-    @copyright  2026 Krishna Gupta
-    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 }}
 <div style="max-width:1140px; margin:0 auto;">
 

@@ -18,15 +18,19 @@
 
     Changelog page template for MS Graph API Mailer.
 
+    Context variables required for this template:
+    * settings_url - URL of the plugin settings page.
+    * emaillog_url - URL of the email log page.
+
+    @package    local_msgraph_api_mailer
+    @copyright  2026 Krishna Gupta
+    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+
     Example context (json):
     {
         "settings_url": "/admin/settings.php?section=local_msgraph_api_mailer",
         "emaillog_url": "/local/msgraph_api_mailer/emaillog.php"
     }
-
-    @package    local_msgraph_api_mailer
-    @copyright  2026 Krishna Gupta
-    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 }}
 <div style="max-width:860px; margin:0 auto;">
 
@@ -39,12 +43,46 @@
         </div>
     </div>
 
+    {{! v1.1.9 }}
+    <div class="cl-card">
+        <div class="cl-card-header">
+            <span class="cl-badge-version">v1.1.9</span>
+            <h4>Contact Site Support Fix &amp; Mustache Prechecker</h4>
+            <span class="cl-badge-latest">Latest</span>
+            <span class="cl-date">2026-06-10</span>
+        </div>
+        <div class="cl-body"><ul>
+            <li>
+                <span class="cl-type-fix">FIX</span>
+                <strong>&ldquo;Email could not be sent&rdquo; on the Contact Site Support form</strong> &mdash;
+                On hosts without <code>/bin/true</code> (Windows, minimal containers) the
+                plugin suppressed the duplicate SMTP send with
+                <code>clearAllRecipients()</code>, which made <code>PHPMailer::send()</code>
+                &mdash; and therefore <code>email_to_user()</code> &mdash; return
+                <code>false</code>. The Contact Site Support form is one of the few callers
+                that surfaces that as an error, so users saw a failure notice even though
+                the email was delivered via Graph. The duplicate-prevention path now uses an
+                OS-appropriate no-op (<code>/bin/true</code> on Unix, the <code>cmd.exe</code>
+                built-in <code>rem</code> on Windows) and keeps recipients intact, so
+                <code>send()</code> returns <code>true</code> on every platform.
+            </li>
+            <li>
+                <span class="cl-type-fix">FIX</span>
+                <strong>Mustache &ldquo;Example context JSON is unparsable&rdquo;</strong> &mdash;
+                Reordered the docblocks in all three templates so the
+                <code>Example context (json):</code> block is the last element before
+                <code>}}</code>; the <code>@package</code>/<code>@copyright</code>/<code>@license</code>
+                tags previously followed the JSON and were swept into it by the linter.
+            </li>
+        </ul></div>
+    </div>
+
     {{! v1.1.8 }}
     <div class="cl-card">
         <div class="cl-card-header">
             <span class="cl-badge-version">v1.1.8</span>
             <h4>Prechecker Compliance &mdash; Mustache &amp; AMD Rebuild</h4>
-            <span class="cl-badge-latest">Latest</span>
+            <span class="cl-badge-stable">Stable</span>
             <span class="cl-date">2026-04-08</span>
         </div>
         <div class="cl-body"><ul>
