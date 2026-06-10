@@ -113,19 +113,16 @@ function local_msgraph_api_mailer_phpmailer_init($mail) {
             // Log successful send (always, when plugin is enabled).
             local_msgraph_api_mailer_log_record($recipients, $subject, 1, 'Sent via MS Graph API', $hasattachment);
 
-            // Prevent PHPMailer from sending a duplicate via SMTP.
-            // On Linux/Mac (Docker): switch to sendmail mode pointing at /bin/true.
-            // /bin/true accepts any stdin and exits 0, so PHPMailer::send() returns
-            // true — email_to_user() reports success AND Moodle's built-in
-            // "Test outgoing mail configuration" also passes.
-            // On Windows (no /bin/true): fall back to clearing recipients; PHPMailer
-            // throws "no recipients" but the email WAS already delivered via Graph API.
-            if (is_executable('/bin/true')) {
-                $mail->isSendmail();
-                $mail->Sendmail = '/bin/true';
-            } else {
-                $mail->clearAllRecipients();
-            }
+            // Prevent PHPMailer from sending a duplicate via SMTP. The email was
+            // already delivered via Graph, so route PHPMailer's transport to an
+            // OS-appropriate no-op command (sendmail mode). The no-op accepts any
+            // stdin and exits 0, so PHPMailer::postSend() returns true — meaning
+            // email_to_user() reports success AND Moodle's built-in "Test outgoing
+            // mail configuration" passes. Recipients are left intact so preSend()
+            // still succeeds. This fixes the Contact Site Support form, which is
+            // one of the few callers that surfaces a false return as an error.
+            $mail->isSendmail();
+            $mail->Sendmail = local_msgraph_api_mailer_noop_sendmail();
         } else {
             // Graph API returned non-202; log failure and fall through to SMTP.
             local_msgraph_api_mailer_log_record(
@@ -149,6 +146,30 @@ function local_msgraph_api_mailer_phpmailer_init($mail) {
         }
         // If SMTP fallback is enabled, fall through — PHPMailer will attempt SMTP.
     }
+}
+
+/**
+ * Return an OS-appropriate no-op command for PHPMailer's sendmail mode.
+ *
+ * After an email is delivered via Graph, PHPMailer is pointed at this command to
+ * suppress the duplicate SMTP send while still letting PHPMailer::postSend()
+ * return true. The command must consume stdin and exit 0.
+ *
+ * @return string Path or name of a command that ignores its input and exits 0.
+ */
+function local_msgraph_api_mailer_noop_sendmail() {
+    if (DIRECTORY_SEPARATOR === '\\') {
+        // Windows: 'rem' is a cmd.exe built-in that ignores all arguments and exits 0.
+        // PHP's popen() runs commands through cmd.exe, so this returns success.
+        return 'rem';
+    }
+    foreach (['/bin/true', '/usr/bin/true'] as $candidate) {
+        if (is_executable($candidate)) {
+            return $candidate;
+        }
+    }
+    // Last resort: resolve 'true' via PATH.
+    return 'true';
 }
 
 /**

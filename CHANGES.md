@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## [1.1.9] — 2026-06-10 (version 2026061000)
+
+### Fixed
+- **"Email could not be sent" on the Contact Site Support form (hosts without `/bin/true`)** — after delivering via Graph, the plugin suppressed the duplicate SMTP send by calling `clearAllRecipients()` on any host lacking `/bin/true` (Windows, minimal containers). That made `PHPMailer::preSend()` throw "no recipients", so `$mail->send()` — and therefore `email_to_user()` — returned `false`. Most callers ignore that return value, but `user/contactsitesupport.php` checks it and showed the "could not be sent, use the registered support address" notice (and fired a spurious `email_failed` event) even though the message was delivered. The duplicate-prevention path now points PHPMailer's sendmail mode at an OS-appropriate no-op (`/bin/true`/`true` on Unix, the `cmd.exe` built-in `rem` on Windows) and leaves recipients intact, so `send()` returns `true` on every platform. New helper `local_msgraph_api_mailer_noop_sendmail()` in `lib.php`
+- **Mustache "Example context JSON is unparsable" prechecker errors** — in all three templates (`changelog.mustache`, `email_log.mustache`, `test_validate.mustache`) the `@package`/`@copyright`/`@license` tags followed the `Example context (json):` block inside the same `{{! }}` comment. The linter extracts everything after the marker to the end of the docblock and JSON-decodes it, so those trailing tag lines broke parsing. The docblocks were reordered so the example-context JSON is the last element before `}}` (tags moved above it), matching Moodle core templates. A `Context variables required for this template:` section was also added to each
+
+---
+
 ## [1.1.8] — 2026-04-08 (version 2026040800)
 
 ### Fixed

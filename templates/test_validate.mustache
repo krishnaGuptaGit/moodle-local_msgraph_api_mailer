@@ -18,6 +18,29 @@
 
     Test and Validate page template for MS Graph API Mailer.
 
+    Context variables required for this template:
+    * settings_url - URL of the plugin settings page.
+    * emaillog_url - URL of the email log page.
+    * not_configured - Whether the plugin is missing required configuration.
+    * missing_config_msg - Message shown when the plugin is not fully configured.
+    * go_to_settings - Label for the link to the settings page.
+    * enabled_badge_class - CSS modifier class for the "enabled" status badge.
+    * enabled_icon - Font Awesome icon name for the "enabled" status badge.
+    * enabled_text - Text for the "enabled" status badge.
+    * config_badge_class - CSS modifier class for the "configuration" status badge.
+    * config_icon - Font Awesome icon name for the "configuration" status badge.
+    * config_text - Text for the "configuration" status badge.
+    * has_sender_email - Whether a sender email address is configured.
+    * sender_email - The configured sender email address.
+    * has_display_name - Whether a sender display name is configured.
+    * sender_display_name - The configured sender display name.
+    * sender_display_name_not_set - Fallback text when no display name is set.
+    * button_disabled - Whether the test action buttons should be disabled.
+
+    @package    local_msgraph_api_mailer
+    @copyright  2026 Krishna Gupta
+    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+
     Example context (json):
     {
         "settings_url": "/admin/settings.php?section=local_msgraph_api_mailer",
@@ -38,10 +61,6 @@
         "sender_display_name_not_set": "Display name not set",
         "button_disabled": false
     }
-
-    @package    local_msgraph_api_mailer
-    @copyright  2026 Krishna Gupta
-    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 }}
 <div class="row justify-content-center" style="max-width:860px; margin: 0 auto;">
 
